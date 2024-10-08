@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Form</title>
+    <link rel="stylesheet" href="../NexusCare/css/search.css">
+</head>
+<body>
+    <header>
+        <a href="homepage.html">
+        <img src="../NexusCare/images/logo.png" alt="Nexus Care Logo">
+    </header>
+    
+        <div class="search-bar">
+   
+    <select id="organInput" placeholder="Organ">
+        <option value="" disabled selected>Select Organ</option>
+        <option value="Heart">Heart</option>
+        <option value="Liver">Liver</option>
+        <option value="Kidney">Kidney</option>
+        <option value="Lung">Lung</option>
+        <option value="Pancreas">Pancreas</option>
+        <option value="Intestine">Intestine</option>
+        <option value="Cornea">Cornea</option>
+        <option value="Skin">Skin</option>
+        <option value="Bone">Bone</option>
+        <option value="Heart valve">Heart valve</option>
+        <option value="Blood vessel">Blood vessel</option>
+        <option value="Connective tissue">Connective tissue</option>
+    </select>
+    <input type="text" id="locationInput" placeholder="Enter location">
+    <button onclick="search()">Search</button>
+    <div class="container"></div>
+</div>
+
+<div id="searchResults"></div>
+
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDDaE0Q-Yx7VLXDMX6xo_Gb3W0Y4dsFY68",
+        authDomain: "nexuscare-43a3c.firebaseapp.com",
+        databaseURL: "https://nexuscare-43a3c-default-rtdb.firebaseio.com",
+        projectId: "nexuscare-43a3c",
+        storageBucket: "nexuscare-43a3c.appspot.com",
+        messagingSenderId: "389146758058",
+        appId: "1:389146758058:web:f9d7a2c9a01b894d5b39d3",
+        measurementId: "G-ZZPGSDWF0F"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    function search() {
+        const location = document.getElementById('locationInput').value.trim();
+        const organ = document.getElementById('organInput').value;
+
+        if (!location || !organ) {
+            alert('Please enter both location and organ.');
+            return;
+        }
+        var count = 0;
+        const searchResultsDiv = document.getElementById('searchResults');
+        searchResultsDiv.innerHTML = ''; // Clear previous search results
+
+        const bankFormRef = firebase.database().ref("BankForm");
+
+        bankFormRef.once('value').then(snapshot => {
+            snapshot.forEach(childSnapshot => {
+                const uniqueId = childSnapshot.key;
+                const formData = childSnapshot.val();
+                // Check if address matches
+                if (formData.banktype === 'Organ') {
+                    if (formData.address.toLowerCase().includes(location.toLowerCase())) {
+                        const availability = formData.availability;
+
+                        // Check if organ availability is greater than zero
+                        if (availability && availability[organ] > 0) {
+                            const resultDiv = document.createElement('div');
+                            resultDiv.innerHTML = `
+                            <div class="results">
+                                <div>
+                                <br>
+                                <p>Name: ${formData.name}</p>
+                                <p>Email: ${formData.emailid}</p>
+                                <p>Contact Number: ${formData.contactno}</p>
+                                <p>Bank Type: ${formData.banktype}</p>
+                                <p>Address: ${formData.address}</p>
+                                <p>Organ: ${organ}</p>
+                                <p>Availability: ${availability[organ]}</p>
+                                <br>
+                            `;
+                            searchResultsDiv.appendChild(resultDiv);
+                            var requestButton = document.getElementById("requestButton");
+                            if (requestButton) {
+                                requestButton.parentNode.removeChild(requestButton)
+                            }
+                            count++;
+                        }
+                    }
+                }
+            });
+            if (count === 0) {
+                console.log("No organ available");
+                if (!document.getElementById("requestButton")) {
+                    var button = document.createElement("button");
+                    button.id = "requestButton";
+                    document.body.appendChild(button);
+                    // Set button attributes
+                    button.innerHTML = "Request Organ";
+                    button.onclick = function() {
+                        alert("Button clicked!");
+                        window.location.href = "requestForm.html";
+                        // Additional actions when button is clicked
+                    };
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

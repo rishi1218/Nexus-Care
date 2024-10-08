@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Data</title>
+    
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+        box-sizing: border-box;
+    }
+    
+
+    .v87_2 {
+        width: 100%;
+        height: 86px;
+        background: rgba(63, 201, 231, 1);
+        opacity: 1;
+        position: absolute;
+        top: 938px;
+        left: 0px;
+        overflow: hidden;
+    }
+
+    .v87_20 {
+        width: 100%;
+        height: 150px;
+        background: rgb(34, 209, 158);
+        background: linear-gradient(rgba(127, 224, 246, 1), rgba(8, 196, 141, 1));
+        opacity: 1;
+        position: relative;
+        top: 0px;
+        z-index: 10;
+        left: 0px;
+        overflow: hidden;
+    }
+    
+    .container{
+    width: 90%;
+    height: 60vh;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow:  0px 5px 25px rgba(0,0,0,0.2);
+    background-color: #23d19f;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+
+.container form{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+
+.inputBox{
+    width: 100%;
+    margin: 10px 0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.inputBox input[type="text"], .inputBox input[type="email"], .inputBox input[type="contact"], .inputBox input[type="banktype"]{
+    width: 100%;
+    height: 25px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.2);
+    padding: 0px 10px;
+    font-size: 16px;
+    color: #444;
+}
+
+label {
+    margin-inside: 100px; /* Adjust as needed */
+    display: block; /* Ensures each label occupies its own line */
+}
+
+.inputBox textarea{
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.2);
+    padding: 0px 10px;
+    font-size: 16px;
+    color: #444;
+}
+
+.inputBox button{
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    outline: none;
+    background: rgb(0, 119, 255);
+    color: #FFF;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+
+}
+
+.inputBox button:hover{
+    background: rgb(0, 17, 255);
+    transition: all 0.3s ease;
+}
+
+::placeholder{
+    font-size: 16px;
+}
+
+.alert{
+    width: 100%;
+    background: rgb(0, 255, 106);
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+    <div class="v87_2"></div>
+    <div class="v87_20 flex justify-center items-center">
+        <a href="homepage.html">
+            <img src="images/logo.png" alt="NexusCare Logo" id="logo" width="240px" height="80px" /></a>
+    </div>
+    <div id="formDetails" class="container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDaE0Q-Yx7VLXDMX6xo_Gb3W0Y4dsFY68",
+            authDomain: "nexuscare-43a3c.firebaseapp.com",
+            databaseURL: "https://nexuscare-43a3c-default-rtdb.firebaseio.com",
+            projectId: "nexuscare-43a3c",
+            storageBucket: "nexuscare-43a3c.appspot.com",
+            messagingSenderId: "389146758058",
+            appId: "1:389146758058:web:f9d7a2c9a01b894d5b39d3",
+            measurementId: "G-ZZPGSDWF0F"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const uniqueId = urlParams.get('uniqueId');
+
+        const bankFormRef = firebase.database().ref("BankForm/" + uniqueId);
+
+        bankFormRef.once('value').then(snapshot => {
+            const formData = snapshot.val();
+            console.log(formData);
+
+            // Display basic form details
+            document.getElementById('formDetails').innerHTML = `
+                <div class='inputBox' ><div class='input-label'>Name:</div> <input type="text" id="name" value="${formData.name}"></div>
+                <div class='inputBox'><div class='input-label'>Email:</div> <input type="email" id="email" value="${formData.emailid}"></div>
+                <div class='inputBox'><div class='input-label'>Contact Number:</div> <input type="tel" id="contact" value="${formData.contactno}"></div>
+                <div class='inputBox'><div class='input-label'>Bank Type:</div> <input type="text" id="bankType" value="${formData.banktype}"></div>
+                <div class='inputBox'><div class='input-label'>Address:</div> <input type="text" id="address" value="${formData.address}"></div>
+            `;
+
+            // Add submit button
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit';
+            const pdiv = document.createElement('div');
+            pdiv.classList.add("inputBox")
+            pdiv.appendChild(submitButton);
+            document.getElementById('formDetails').appendChild(pdiv);
+            // Add event listener to submit button
+            submitButton.addEventListener('click', function () {
+                const updatedData = {
+                    name: document.getElementById('name').value.trim(),
+                    emailid: document.getElementById('email').value.trim(),
+                    contactno: document.getElementById('contact').value.trim(),
+                    banktype: document.getElementById('bankType').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                };
+
+                // Update form data in the database
+                bankFormRef.update(updatedData)
+                    .then(() => {
+                        // Reload the page to display updated data
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error updating form data:', error);
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>

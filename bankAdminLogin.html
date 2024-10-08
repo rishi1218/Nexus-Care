@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            box-sizing: border-box;
+        }
+
+        .v87_2 {
+            width: 100%;
+            height: 86px;
+            background: rgba(63, 201, 231, 1);
+            opacity: 1;
+            position: absolute;
+            top: 938px;
+            left: 0px;
+            overflow: hidden;
+        }
+
+        .v87_20 {
+            width: 100%;
+            height: 150px;
+            background: rgb(34, 209, 158);
+            background: linear-gradient(rgba(127, 224, 246, 1), rgba(8, 196, 141, 1));
+            opacity: 1;
+            position: relative;
+            top: 0px;
+            z-index: 10;
+            left: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="v87_2"></div>
+    <div class="v87_20 flex justify-center items-center">
+        <a href="homepage.html">
+            <img src="images/logo.png" alt="NexusCare Logo" width="240px" height="80px" /></a>
+    </div>
+    <div class="w-[100%] h-[70vh] flex justify-center items-center">
+        <div
+            class="bg-[#22d19e] rounded-lg w-[400px] h-[400px] flex justify-center text-white flex-col items-center gap-10">
+            <h1 class="w-full h-8 text-center text-2xl">Bank Admin Login</h1>
+            <div id="loginError" style="color: red; display: none">
+                Invalid unique ID or password.
+            </div>
+            <form id="loginForm" class="w-full h-52 flex flex-col justify-center p-10 gap-6">
+                <div class="flex flex-col gap-3">
+                    <label for="uniqueId" class="text-start" class="">Unique ID:</label>
+                    <input type="text" id="uniqueId" class="w-62 text-black rounded-lg p-2" required />
+                </div>
+                <div class="flex flex-col gap-3">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="text-black rounded-lg p-2" required />
+                </div>
+                <div class="w-full h-14 flex justify-center items-center">
+                    <button type="submit" class="w-32 h-10 rounded-lg p-2 bg-white text-black">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.4/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDaE0Q-Yx7VLXDMX6xo_Gb3W0Y4dsFY68",
+            authDomain: "nexuscare-43a3c.firebaseapp.com",
+            databaseURL: "https://nexuscare-43a3c-default-rtdb.firebaseio.com",
+            projectId: "nexuscare-43a3c",
+            storageBucket: "nexuscare-43a3c.appspot.com",
+            messagingSenderId: "389146758058",
+            appId: "1:389146758058:web:f9d7a2c9a01b894d5b39d3",
+            measurementId: "G-ZZPGSDWF0F",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const loginForm = document.getElementById("loginForm");
+        const loginError = document.getElementById("loginError");
+
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const uniqueId = document.getElementById("uniqueId").value;
+            const password = document.getElementById("password").value;
+
+            // Reference to the bank form in Firebase database
+            const bankFormRef = firebase.database().ref("BankForm/" + uniqueId);
+
+            bankFormRef
+                .once("value")
+                .then((snapshot) => {
+                    const formData = snapshot.val();
+                    if (formData) {
+                        if (formData.password === password) {
+                            // Check banktype
+                            if (formData.banktype === "Blood") {
+                                // Redirect to bankDetails.html if banktype is Blood
+                                window.location.href =
+                                    "bankDetails.html?uniqueId=" + uniqueId;
+                            } else if (formData.banktype === "Organ") {
+                                // Print "organ" to console if banktype is Organ
+                                window.location.href =
+                                    "organBankDetails.html?uniqueId=" + uniqueId;
+                            }
+                        } else {
+                            // Display login error if unique ID or password is incorrect
+                            loginError.style.display = "block";
+                        }
+                    } else {
+                        // Display login error if unique ID is not found
+                        loginError.style.display = "block";
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    // Display login error if there is an error fetching data
+                    loginError.style.display = "block";
+                });
+        });
+    </script>
+</body>
+
+</html>

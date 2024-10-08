@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Form</title>
+    <link rel="stylesheet" href="../NexusCare Final/css/donorForm.css">
+</head>
+<body>
+<div class="v91_100 flex justify-center items-center">
+    <a href="homepage.html">
+        <img src="../NexusCare/images/logo.png" alt="NexusCare Logo" width="180px" height="60px";/>
+    </a>
+</div>
+    <div class="v91_104"></div>
+</div>
+
+<div class="container">
+    <form action="" id="donorForm">
+        <div class="alert">Your message sent</div>
+
+        <div class="inputBox">
+            <input type="text" id="name" placeholder="Donor Name" />
+        </div>
+
+        <div class="inputBox">
+            <input type="email" id="emailid" placeholder="Email ID" />
+        </div>
+
+        <div class="inputBox">
+            <input type="contact" id="contactno" placeholder="Contact Number" />
+        </div>
+
+        <div class="inputBox">
+            <select id="gender">
+                <option value="" disabled selected>Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+        <div class="inputBox">
+            <input type="age" id="age" placeholder="Age" />
+        </div>
+        <div class="inputBox">
+            <input type="height" id="height" placeholder="Height (in cm)" />
+        </div>
+        <div class="inputBox">
+            <input type="weight" id="weight" placeholder="Weight (in kg)" />
+        </div>
+        <div class="inputBox">
+            <textarea id="address" cols="30" rows="10" placeholder="Address"></textarea>
+        </div>
+        <div class="inputBox">
+            <select id="donortype">
+                <option value="" disabled selected>Select Donor Type</option>
+                <option value="Blood">Blood Donor</option>
+                <option value="Organ">Organ Donor</option>
+            </select>
+        </div>
+        <div class="inputBox" id="organInput" style="display: none;">
+            <select id="organType">
+                <option value="" disabled selected>Select Organ Type</option>
+                <option value="Heart">Heart</option>
+                <option value="Liver">Liver</option>
+                <option value="Kidney">Kidney</option>
+                <option value="Lung">Lung</option>
+                <option value="Pancreas">Pancreas</option>
+                <option value="Intestine">Intestine</option>
+                <option value="Cornea">Cornea</option>
+                <option value="Skin">Skin</option>
+                <option value="Bone">Bone</option>
+                <option value="Heart valve">Heart valve</option>
+                <option value="Blood vessel">Blood vessel</option>
+                <option value="Connective tissue">Connective tissue</option>
+            </select>
+        </div>
+        <div class="inputBox">
+            <select id="bloodTypeInput">
+                <option value="" disabled selected>Select Blood Type</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+            </select>
+        </div>
+        <div class="inputBox">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="js/donorForm.js"></script>
+</body>
+</html>

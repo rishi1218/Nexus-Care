@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Listing</title>
+    <link rel="stylesheet" href="../NexusCare Final/css/search.css">
+</head>
+<body>
+    <header style="text-align: center;">
+        
+        <img src="../NexusCare/images/logo.png" alt="Nexus Care Logo">
+       
+    </header>
+    
+    <div class="container">
+        <div class="search-bar">
+    <input type="text" id="locationFilter" placeholder="Filter by Location">
+    <select id="bankTypeFilter">
+        <option value="">All Bank Types</option>
+        <option value="blood">Blood Bank</option>
+        <option value="organ">Organ Bank</option>
+    </select>
+    <button onclick="applyFilters()">Apply Filters</button>
+    <button onclick="redirectToBankForm()">Add Bank</button>
+</div>
+</div>
+<div id="searchResults"></div>
+
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDDaE0Q-Yx7VLXDMX6xo_Gb3W0Y4dsFY68",
+        authDomain: "nexuscare-43a3c.firebaseapp.com",
+        databaseURL: "https://nexuscare-43a3c-default-rtdb.firebaseio.com",
+        projectId: "nexuscare-43a3c",
+        storageBucket: "nexuscare-43a3c.appspot.com",
+        messagingSenderId: "389146758058",
+        appId: "1:389146758058:web:f9d7a2c9a01b894d5b39d3",
+        measurementId: "G-ZZPGSDWF0F"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    const searchResultsDiv = document.getElementById('searchResults');
+
+    function fetchData() {
+        const locationFilter = document.getElementById('locationFilter').value.trim().toLowerCase();
+        const bankTypeFilter = document.getElementById('bankTypeFilter').value;
+
+        const bankFormRef = firebase.database().ref("BankForm");
+        let banksFound = false;
+
+        bankFormRef.once('value').then(snapshot => {
+            snapshot.forEach(childSnapshot => {
+                const uniqueId = childSnapshot.key;
+                const formData = childSnapshot.val();
+
+                // Apply filters
+                if ((!locationFilter || formData.address.toLowerCase().includes(locationFilter)) &&
+                    (!bankTypeFilter || formData.banktype.toLowerCase() === bankTypeFilter)) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.innerHTML = `
+                    <div class="results">
+                                <div>
+                        <br>
+                        <p>Name: ${formData.name}</p>
+                        <p>Email: ${formData.emailid}</p>
+                        <p>Contact Number: ${formData.contactno}</p>
+                        <p>Bank Type: ${formData.banktype}</p>
+                        <p>Address: ${formData.address}</p>
+                        <button onclick="edit('${uniqueId}')">Edit</button>
+                        <button onclick="removeData('${uniqueId}')">Remove</button>
+                        <br>
+                    `;
+                    searchResultsDiv.appendChild(resultDiv);
+                    banksFound = true;
+                }
+            });
+
+            if (!banksFound) {
+                searchResultsDiv.innerHTML = "<p>No banks found.</p>";
+            }
+        });
+    }
+
+    function applyFilters() {
+        // Clear previous search results
+        searchResultsDiv.innerHTML = '';
+        // Fetch data with applied filters
+        fetchData();
+    }
+
+    function redirectToBankForm() {
+        // Redirect to bankForm.html
+        window.location.href = 'bankForm.html';
+    }
+
+    function edit(uniqueId) {
+        // Redirect to edit page with uniqueId
+        window.location.href = `editDetails.html?uniqueId=${uniqueId}`;
+    }
+
+    function removeData(uniqueId) {
+        const confirmation = confirm("Are you sure you want to remove this data?");
+        if (confirmation) {
+            const bankFormRef = firebase.database().ref("BankForm");
+            bankFormRef.child(uniqueId).remove()
+                .then(() => {
+                    alert("Data removed successfully!");
+                    // Refresh the displayed data with filters applied
+                    searchResultsDiv.innerHTML = '';
+                    fetchData();
+                })
+                .catch(error => {
+                    console.error("Error removing data: ", error);
+                });
+        }
+    }
+
+    // Fetch initial data
+    fetchData();
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Form</title>
+    <link rel="stylesheet" href="../NexusCare/css/search.css">
+</head>
+<body>
+    <header style="text-align: center;">
+        <a href="homepage.html">
+        <img src="../NexusCare/images/logo.png" alt="Nexus Care Logo" window.location.href = "homepage.html";>
+       
+    </header>
+        <div class="search-bar">
+    <select id="bloodTypeInput" placeholder="Blood Type">
+        <option value="" disabled selected>Select Blood Type</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+    </select>
+    <input type="text" id="locationInput" placeholder="Enter the location" >
+    <button onclick="search()">Search</button>
+</div>
+<div class="container"></div>
+<div id="searchResults"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDDaE0Q-Yx7VLXDMX6xo_Gb3W0Y4dsFY68",
+        authDomain: "nexuscare-43a3c.firebaseapp.com",
+        databaseURL: "https://nexuscare-43a3c-default-rtdb.firebaseio.com",
+        projectId: "nexuscare-43a3c",
+        storageBucket: "nexuscare-43a3c.appspot.com",
+        messagingSenderId: "389146758058",
+        appId: "1:389146758058:web:f9d7a2c9a01b894d5b39d3",
+        measurementId: "G-ZZPGSDWF0F"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    function search() {
+        const location1 = document.getElementById('locationInput').value.trim();
+        const bloodType = document.getElementById('bloodTypeInput').value;
+        
+        if (!location1 || !bloodType) {
+            alert('Please enter both location1 and blood type.');
+            return;
+        }
+        
+        var count = 0;
+        const searchResultsDiv = document.getElementById('searchResults');
+        searchResultsDiv.innerHTML = ' '; // Clear previous search results
+        const form = document.querySelector('.container');
+        const bankFormRef = firebase.database().ref("BankForm");
+        form.innerHTML = ' ';
+        bankFormRef.once('value').then(snapshot => {
+            snapshot.forEach(childSnapshot => {
+                const uniqueId = childSnapshot.key;
+                const formData = childSnapshot.val();
+              
+                // Check if address matches
+                if (formData.banktype === 'Blood') {
+                    if (formData.address.toLowerCase().includes(location1.toLowerCase())) {
+                        const availability = formData.availability;
+                        const form = document.querySelector('.container');
+                        // Check if blood type availability is greater than zero
+                        if (availability && availability[bloodType] > 0) {
+                            
+                            const resultDiv = document.createElement('div');
+                            resultDiv.innerHTML = `
+                                <div class="results">
+                                <div>
+                                <br>
+                                <p>Name: ${formData.name}</p>
+                                <p>Email: ${formData.emailid}</p>
+                                <p>Contact Number: ${formData.contactno}</p>
+                                <p>Bank Type: ${formData.banktype}</p>
+                                <p>Address: ${formData.address}</p>
+                                <p>Blood Type: ${bloodType}</p>
+                                <p>Availability: ${availability[bloodType]}</p>
+                                <br>
+                            `;
+                           
+                            form.appendChild(resultDiv);
+                            var requestButton = document.getElementById("requestButton");
+                            if (requestButton) {
+                                requestButton.parentNode.removeChild(requestButton)
+                            }
+                            count++;
+                            
+                        }
+                    }
+                }
+            });
+            if (count === 0) {
+                console.log("No blood available");
+                if (!document.getElementById("requestButton")) {
+                    var button1 = document.createElement("button");
+                        button1.innerHTML = "Request Blood";
+                        var target = document.querySelector(".container"); // Gets only the first match
+                        target.appendChild(button1);
+                    button1.onclick = function() {
+                        alert("Button clicked!");
+                        window.location.href = "requestForm.html";
+                        // Additional actions when button is clicked
+                    };
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
